@@ -4,7 +4,7 @@ PACKS = extlib
 INCDIRS =
 LIBS =
 ANNOTATE = yes
-OCAMLFLAGS = -w A
+OCAMLFLAGS = -bin-annot -w A
 
 all: debug-code
 
