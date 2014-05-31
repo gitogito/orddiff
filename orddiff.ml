@@ -43,42 +43,41 @@ module Rk4 = struct
     mutable t : float;
     mutable x_ary : float array;
     xdot_ary : (t:float -> x_ary:float array -> float) array;
+    order : int;
+    mutable f1_ary : float array;
+    mutable f2_ary : float array;
+    mutable f3_ary : float array;
+    mutable f4_ary : float array;
+    dt2 : float;
   }
 
   let update self () =
     self.t <- self.t +. self.dt;
 
-    let order = Array.length self.x_ary in
-    let f1_ary = Array.make order 0.0 in
-    let f2_ary = Array.make order 0.0 in
-    let f3_ary = Array.make order 0.0 in
-    let f4_ary = Array.make order 0.0 in
-    let dt2 = self.dt /. 2.0 in
-
-    for i = 0 to order - 1 do
-      f1_ary.(i) <- self.xdot_ary.(i) ~t:self.t ~x_ary:self.x_ary
+    for i = 0 to self.order - 1 do
+      self.f1_ary.(i) <- self.xdot_ary.(i) ~t:self.t ~x_ary:self.x_ary
     done;
 
-    let x_ary' = Array.mapi (fun i x -> x +. dt2 *. f1_ary.(i)) self.x_ary in
-    for i = 0 to order - 1 do
-      f2_ary.(i) <- self.xdot_ary.(i) ~t:(self.t +. dt2) ~x_ary:x_ary'
+    let x_ary' = Array.mapi (fun i x -> x +. self.dt2 *. self.f1_ary.(i)) self.x_ary in
+    for i = 0 to self.order - 1 do
+      self.f2_ary.(i) <- self.xdot_ary.(i) ~t:(self.t +. self.dt2) ~x_ary:x_ary'
     done;
 
-    let x_ary' = Array.mapi (fun i x -> x +. dt2 *. f2_ary.(i)) self.x_ary in
-    for i = 0 to order - 1 do
-      f3_ary.(i) <- self.xdot_ary.(i) ~t:(self.t +. dt2) ~x_ary:x_ary'
+    let x_ary' = Array.mapi (fun i x -> x +. self.dt2 *. self.f2_ary.(i)) self.x_ary in
+    for i = 0 to self.order - 1 do
+      self.f3_ary.(i) <- self.xdot_ary.(i) ~t:(self.t +. self.dt2) ~x_ary:x_ary'
     done;
 
-    let x_ary' = Array.mapi (fun i x -> x +. self.dt *. f3_ary.(i)) self.x_ary in
-    for i = 0 to order - 1 do
-      f4_ary.(i) <- self.xdot_ary.(i) ~t:(self.t +. self.dt) ~x_ary:x_ary'
+    let x_ary' = Array.mapi (fun i x -> x +. self.dt *. self.f3_ary.(i)) self.x_ary in
+    for i = 0 to self.order - 1 do
+      self.f4_ary.(i) <- self.xdot_ary.(i) ~t:(self.t +. self.dt) ~x_ary:x_ary'
     done;
 
-    for i = 0 to order - 1 do
-      let f1 = f1_ary.(i) in
-      let f2 = f2_ary.(i) in
-      let f3 = f3_ary.(i) in
-      let f4 = f4_ary.(i) in
+    for i = 0 to self.order - 1 do
+      let f1 = self.f1_ary.(i) in
+      let f2 = self.f2_ary.(i) in
+      let f3 = self.f3_ary.(i) in
+      let f4 = self.f4_ary.(i) in
       self.x_ary.(i) <- self.x_ary.(i) +. self.dt /. 6.0 *. (f1 +. 2.0 *. f2 +. 2.0 *. f3 +. f4)
     done
 
@@ -86,11 +85,18 @@ module Rk4 = struct
     self.x_ary
 
   let init ~dt ~x_ary ~xdot_ary =
+    let order = Array.length x_ary in
     let self = {
       dt;
       t = 0.0;
       x_ary;
       xdot_ary;
+      order;
+      f1_ary = Array.make order 0.0;
+      f2_ary = Array.make order 0.0;
+      f3_ary = Array.make order 0.0;
+      f4_ary = Array.make order 0.0;
+      dt2 = dt /. 2.0
     } in
     { update = update self;
       get_x_ary = get_x_ary self; }
