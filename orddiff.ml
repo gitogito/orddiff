@@ -21,7 +21,7 @@ module Euler = struct
                     (fun i x -> x +. (self.xdot_ary.(i) ~t:self.t ~x_ary:self.x_ary) *. self.dt)
                     self.x_ary
 
-  let get_x_ary (self : t') () =
+  let get_x_ary self () =
     self.x_ary
 
   let init ~dt ~x_ary ~xdot_ary =
@@ -58,19 +58,19 @@ module Rk4 = struct
       self.f1_ary.(i) <- self.xdot_ary.(i) ~t:self.t ~x_ary:self.x_ary
     done;
 
-    let x_ary' = Array.mapi (fun i x -> x +. self.dt2 *. self.f1_ary.(i)) self.x_ary in
+    let x_ary = Array.mapi (fun i x -> x +. self.dt2 *. self.f1_ary.(i)) self.x_ary in
     for i = 0 to self.order - 1 do
-      self.f2_ary.(i) <- self.xdot_ary.(i) ~t:(self.t +. self.dt2) ~x_ary:x_ary'
+      self.f2_ary.(i) <- self.xdot_ary.(i) ~t:(self.t +. self.dt2) ~x_ary
     done;
 
-    let x_ary' = Array.mapi (fun i x -> x +. self.dt2 *. self.f2_ary.(i)) self.x_ary in
+    let x_ary = Array.mapi (fun i x -> x +. self.dt2 *. self.f2_ary.(i)) self.x_ary in
     for i = 0 to self.order - 1 do
-      self.f3_ary.(i) <- self.xdot_ary.(i) ~t:(self.t +. self.dt2) ~x_ary:x_ary'
+      self.f3_ary.(i) <- self.xdot_ary.(i) ~t:(self.t +. self.dt2) ~x_ary
     done;
 
-    let x_ary' = Array.mapi (fun i x -> x +. self.dt *. self.f3_ary.(i)) self.x_ary in
+    let x_ary = Array.mapi (fun i x -> x +. self.dt *. self.f3_ary.(i)) self.x_ary in
     for i = 0 to self.order - 1 do
-      self.f4_ary.(i) <- self.xdot_ary.(i) ~t:(self.t +. self.dt) ~x_ary:x_ary'
+      self.f4_ary.(i) <- self.xdot_ary.(i) ~t:(self.t +. self.dt) ~x_ary
     done;
 
     for i = 0 to self.order - 1 do
@@ -81,7 +81,7 @@ module Rk4 = struct
       self.x_ary.(i) <- self.x_ary.(i) +. self.dt /. 6.0 *. (f1 +. 2.0 *. f2 +. 2.0 *. f3 +. f4)
     done
 
-  let get_x_ary (self : t') () =
+  let get_x_ary self () =
     self.x_ary
 
   let init ~dt ~x_ary ~xdot_ary =
