@@ -3,5 +3,6 @@
 *.cmi
 *.cmx
 *.cmo
+*.cmt
 *.o
 a.out
