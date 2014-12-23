@@ -16,10 +16,10 @@ module Euler = struct
   }
 
   let update self () =
-    self.t <- self.t +. self.dt;
     self.x_ary <- Array.mapi
                     (fun i x -> x +. (self.xdot_ary.(i) ~t:self.t ~x_ary:self.x_ary) *. self.dt)
-                    self.x_ary
+                    self.x_ary;
+    self.t <- self.t +. self.dt
 
   let get_x_ary self () =
     self.x_ary
@@ -52,8 +52,6 @@ module Rk4 = struct
   }
 
   let update self () =
-    self.t <- self.t +. self.dt;
-
     for i = 0 to self.order - 1 do
       self.f1_ary.(i) <- self.xdot_ary.(i) ~t:self.t ~x_ary:self.x_ary
     done;
@@ -79,7 +77,9 @@ module Rk4 = struct
       let f3 = self.f3_ary.(i) in
       let f4 = self.f4_ary.(i) in
       self.x_ary.(i) <- self.x_ary.(i) +. self.dt /. 6.0 *. (f1 +. 2.0 *. f2 +. 2.0 *. f3 +. f4)
-    done
+    done;
+
+    self.t <- self.t +. self.dt
 
   let get_x_ary self () =
     self.x_ary
