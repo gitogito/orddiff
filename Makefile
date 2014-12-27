@@ -8,5 +8,5 @@ OCAMLFLAGS = -bin-annot -w A
 
 all: debug-code
 
-export OCAMLMAKEFILE = ~/tmp/ocaml/OCamlMakefile
+export OCAMLMAKEFILE = ~/src/ocamlmakefile/OCamlMakefile
 include $(OCAMLMAKEFILE)
