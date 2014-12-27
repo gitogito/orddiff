@@ -7,23 +7,20 @@ let xdot_ary = [|
 |]
 
 let loop n dt euler rk4 =
-  let print t x_euler x_rk4 =
-    printf "%g\t%g\t%g\n" t x_euler x_rk4
-  in
-  let rec aux i n dt euler rk4 =
-    print
-      (float i *. dt)
-      (euler.Orddiff.Euler.get_x_ary ()).(0)
-      (rk4.Orddiff.Rk4.get_x_ary ()).(0);
-    if i = n then
+  let rec aux i =
+    if i > n then
       ()
     else begin
+      printf "%g\t%g\t%g\n"
+        (float i *. dt)
+        (euler.Orddiff.Euler.get_x_ary ()).(0)
+        (rk4.Orddiff.Rk4.get_x_ary ()).(0);
       euler.Orddiff.Euler.update ();
       rk4.Orddiff.Rk4.update ();
-      aux (i + 1) n dt euler rk4
+      aux (i + 1)
     end
   in
-  aux 0 n dt euler rk4
+  aux 0
 
 let () =
   let n = 100 in
