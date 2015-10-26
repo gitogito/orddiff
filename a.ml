@@ -1,5 +1,14 @@
 open Printf
 
+(*
+ differntial equation: x'' = -x
+
+ x   --> x.(0)
+ x'  --> x.(1)
+
+ x'  --> f.(0)
+ x'' --> f.(1)
+*)
 let dxdt _t x f =
   f.(0) <- x.(1);
   f.(1) <- -.x.(0)
